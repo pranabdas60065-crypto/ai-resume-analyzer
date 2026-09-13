@@ -3,9 +3,11 @@ import "./App.css";
 import ResumeUpload from "./components/ResumeUpload";
 import ReportsHistory from "./components/ReportsHistory";
 import AnalysisReport from "./components/AnalysisReport";
+import LoadingScreen from "./components/LoadingScreen";
 import { uploadResume, fetchReports, fetchReport } from "./api";
 
 export default function App() {
+  const [appReady, setAppReady] = useState(false);
   const [reports, setReports] = useState([]);
   const [activeReport, setActiveReport] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -16,7 +18,6 @@ export default function App() {
       const data = await fetchReports();
       setReports(data);
     } catch (e) {
-      // history is non-critical; fail silently in the UI
       console.error(e);
     }
   }, []);
@@ -51,6 +52,10 @@ export default function App() {
       setError(e.message || "Could not load that report.");
     }
   };
+
+  if (!appReady) {
+    return <LoadingScreen onFinish={() => setAppReady(true)} />;
+  }
 
   return (
     <div className="app">
